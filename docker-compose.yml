@@ -8,7 +8,7 @@ services:
       --lines-per-second 1
       --min-log-length 120
       --max-log-length 180
-      --log-format JSON
+      --log-format string
       --output file
       --file /logs/auth-service.log
       --trace-id-type integer
@@ -40,12 +40,16 @@ services:
   victoria-logs:
     image: victoriametrics/victoria-logs:v1.38.0
     container_name: victoria-logs
+    ports:
+      - "9428:9428"
     command:
       - "--httpListenAddr=:9428"
+      - '-storageDataPath=/victoria-logs-data'
     volumes:
-      - ./victoria-logs-data:/victoria-data
+      - ./victoria-logs-data:/victoria-logs-data
     networks:
       - logging-net
+
 
   # -------------------------------------------------------
   # Grafana
