@@ -3,7 +3,7 @@ sources:
     type: file
     include:
       - /logs/auth-service.log
-    read_from: beginning
+    read_from: end
     ignore_older: 0
 
 transforms:
