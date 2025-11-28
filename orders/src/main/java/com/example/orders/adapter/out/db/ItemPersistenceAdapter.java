@@ -1,18 +1,22 @@
 package com.example.orders.adapter.out.db;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.example.orders.application.domain.model.Item;
 import com.example.orders.application.port.out.CreateItemPort;
+import com.example.orders.application.port.out.DeleteItemPort;
+import com.example.orders.application.port.out.GetItemByIdPort;
 import com.example.orders.application.port.out.GetItemsPort;
+import com.example.orders.application.port.out.UpdateItemPort;
 
 import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class ItemPersistenceAdapter implements CreateItemPort, GetItemsPort{
+public class ItemPersistenceAdapter implements CreateItemPort, GetItemsPort, DeleteItemPort, GetItemByIdPort, UpdateItemPort {
 
 
     private ItemRepository itemRepository;
@@ -36,5 +40,31 @@ public class ItemPersistenceAdapter implements CreateItemPort, GetItemsPort{
             .map(i -> new Item(i.getId(), i.getName()))
             .toList();
     }
+
+    @Override
+    public void deleteItem(Long id) {
+
+        this.itemRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Item> getItemById(Long id) {
+        
+        return itemRepository.findById(id)
+            .map(item -> Optional.of(new Item(item.getId(), item.getName())))
+            .orElse(Optional.empty());
+    }
+
+    @Override
+    public Item updateItem(Long id, Item updated) {
+        
+        ItemEntity entity = new ItemEntity(updated.getId(), updated.getName());
+        
+        itemRepository.save(entity);
+
+        return new Item(entity.getId(), entity.getName());
+
+    }
+
 
 }
