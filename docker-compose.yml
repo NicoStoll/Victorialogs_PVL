@@ -1,4 +1,20 @@
 services:
+
+  # -------------------------------------------------------
+  # Spring Boot Orders Service
+  # -------------------------------------------------------
+  orders-service:
+    build:
+      context: ./orders       # Path to your Dockerfile
+      dockerfile: Dockerfile  # optional if named Dockerfile
+    container_name: orders-service
+    ports:
+      - "8080:8080"
+    networks:
+      - logging-net
+    depends_on:
+      - victoria-logs  # optional, if your Spring app logs to VictoriaMetrics
+    
   # -------------------------------------------------------
   # Log-producing Container
   # -------------------------------------------------------
