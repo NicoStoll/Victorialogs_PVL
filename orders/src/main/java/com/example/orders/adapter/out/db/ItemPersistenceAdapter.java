@@ -29,7 +29,7 @@ public class ItemPersistenceAdapter implements CreateItemPort, GetItemsPort, Del
 
         ItemEntity result = itemRepository.save(entity);
 
-        return new Item(result.getId(), result.getName());
+        return result.toItem();
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ItemPersistenceAdapter implements CreateItemPort, GetItemsPort, Del
         
         return this.itemRepository.findAll()
             .stream()
-            .map(i -> new Item(i.getId(), i.getName()))
+            .map(i -> i.toItem())
             .toList();
     }
 
@@ -51,7 +51,7 @@ public class ItemPersistenceAdapter implements CreateItemPort, GetItemsPort, Del
     public Optional<Item> getItemById(Long id) {
         
         return itemRepository.findById(id)
-            .map(item -> Optional.of(new Item(item.getId(), item.getName())))
+            .map(entity -> Optional.of(entity.toItem()))
             .orElse(Optional.empty());
     }
 
@@ -62,7 +62,7 @@ public class ItemPersistenceAdapter implements CreateItemPort, GetItemsPort, Del
         
         itemRepository.save(entity);
 
-        return new Item(entity.getId(), entity.getName());
+        return entity.toItem();
 
     }
 

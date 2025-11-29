@@ -1,5 +1,7 @@
 package com.example.orders.application.domain.model;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,7 +9,16 @@ import lombok.Getter;
 @Getter
 public class Item {
 
-    private long id;
+    public Item(final Long id, final String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    private Long id;
 
     private String name;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 }

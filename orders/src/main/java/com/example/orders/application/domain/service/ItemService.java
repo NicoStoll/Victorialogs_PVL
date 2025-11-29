@@ -22,7 +22,9 @@ import com.example.orders.application.port.out.GetItemsPort;
 import com.example.orders.application.port.out.UpdateItemPort;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.java.Log;
 
+@Log
 @Service
 @AllArgsConstructor
 public class ItemService implements CreateItemUseCase, GetItemsUseCase, GetItemByIdUseCase, DeleteItemUseCase, UpdateItemUseCase {
@@ -40,7 +42,7 @@ public class ItemService implements CreateItemUseCase, GetItemsUseCase, GetItemB
     @Override
     public Item createItem(CreateItemCommand command) {
 
-        return this.createItemPort.createItem(new Item(-1, command.getName()));
+        return this.createItemPort.createItem(new Item(-1L, command.getName()));
     }
 
     @Override
@@ -55,6 +57,9 @@ public class ItemService implements CreateItemUseCase, GetItemsUseCase, GetItemB
         Optional<Item> optional = this.getItemByIdPort.getItemById(command.getId());
 
         if(optional.isEmpty()) {
+
+            log.warning("Item does not exist");
+
             return;
         }
 
@@ -62,9 +67,15 @@ public class ItemService implements CreateItemUseCase, GetItemsUseCase, GetItemB
     }
 
     @Override
-    public Optional<Item> getItemById(GetItemByIdCommand command) {
+    public Item getItemById(GetItemByIdCommand command) {
         
-        return this.getItemByIdPort.getItemById(command.getId());
+        Optional<Item> optionalItem =  this.getItemByIdPort.getItemById(command.getId());
+
+        if(optionalItem.isPresent()) {
+            return optionalItem.get();
+        }
+
+        throw new ItemNotFoundException("Cannot GET item");
     }
 
     @Override
@@ -73,6 +84,7 @@ public class ItemService implements CreateItemUseCase, GetItemsUseCase, GetItemB
         Optional<Item> optional = this.getItemByIdPort.getItemById(command.getId());
 
         if(optional.isEmpty()) {
+
             throw new ItemNotFoundException("Update not possible since the item does not exist");
         }
         
