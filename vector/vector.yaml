@@ -6,6 +6,11 @@ sources:
     read_from: end
     ignore_older: 0
 
+  orders_logs:
+    type: docker_logs
+    include_containers:
+      - orders-service
+
 transforms:
   parse_json:
     type: remap
@@ -16,10 +21,26 @@ transforms:
       . = parse_json!(.message)
       # keine Arrays, jede Zeile ist ein Event
 
+  orders_log_parser:
+    type: "remap"
+    inputs:
+      - "orders_logs"
+    source: |
+      . = parse_json!(.message)
+      .timestamp = .@timestamp
+      .level = .log.level
+      .service = .service.name
+
+      del(.ecs)
+      del(.log)
+      del(.host)
+      del(.process)
+
 sinks:
   vlogs:
     inputs:
       - parse_json
+      - orders_log_parser
     type: http
     uri: http://victoria-logs:9428/insert/jsonline?_stream_fields=host,container_name&_msg_field=message&_time_field=timestamp
     compression: gzip
