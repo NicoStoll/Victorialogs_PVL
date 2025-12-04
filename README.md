@@ -1,43 +1,69 @@
-# Middleware Logging Demo — Docker Compose (VictoriaLogs + Vector + Grafana)
+# Middleware Logging Demo 
 
-This document provides a clean and production‑inspired demonstration of log aggregation using a fully open-source stack:
+This project demonstrates a clean, modern and open-source log aggregation pipeline suitable for microservices and cloud-native systems. It showcases
+structured logging, normalization, centralized storage and visualization.
 
-VictoriaLogs — high‑performance log database
+## Overview
 
-Vector — log collector, transformer, and shipper
+This repository demonstrates  complete log aggregation system using:
 
-Grafana — visualization and querying
+- Vector: collects, normalizes and forwards logs
+- VictoriaLogs: Log storage
+- Grafana: Visualization and dashboards
+
+The system follows the **12-factor app** guidelines.
+
+## Features
+
+- fully open-source stack
+- multi-service log aggregation (stdout + file)
+- structured logs in JSON
+- normalization of logs
+- high-performance ingestion into VictoriaLogs
+- Grafana dashboards powered by the VictoriaLogs datasource
+- includes a sample REST service with full OpenAPI documentation that conforms to HATEOAS
 
 
-## Run the project 
+## Technology stack
 
-```sh
-docker compose up
-```
+| Component | Purpose |
+| -- | ---|
+| VictoriaLogs | log database, optimized for high-volume ingestion |
+| Vector | log collector & transformer |
+| Grafana | dashboard & queries |
+| Docker Compose | local orchestration |
+| Mock microservice | generate mock logs |
+| Order Service | API with structured logs (stdout) |
 
-## The system:
-
-mocks multiple services writing logs (some to file, some to stdout),
-
-uses Vector to collect & normalize logs following 12‑Factor App logging principles,
-
-stores and queries logs in VictoriaLogs,
-
-visualizes logs in Grafana using the VictoriaLogs datasource plugin,
-
-uses only open-source components (matches Open Cloud Initiative goals).
-
-## Architecture Overview
+## Architecture 
 
 ![Architecture](./architecture.png)
 
-Vector tails files, reads stdout, adds metadata, batches, and sends logs to VictoriaLogs using its HTTP ingestion API.
+## Prerequisites
 
-Grafana queries VictoriaLogs using the official datasource plugin.
+- **Docker** >= Version 20
+- **Docker Compose** >= Version 2
 
+## Getting Started
 
-## Order Service Documentation
+Run everything: 
 
-Documentation includes the OpenAPI definition as well as the services architecture description.
+```sh
+docker compose up -d
+```
 
-[Link to Documentation](./orders/README.md)
+After startup containers will run on:
+
+- [Grafana - http://localhost:3000](http://localhost:3000)
+- [Order Service - http://localhost:8080](http://localhost:8080)
+- [Vector - http://localhost:8686](http://localhost:8686)
+- [VictoriaLogs - http:/localhost:9428](http:/localhost:9428)
+
+## Order Service documentation
+
+[Oder Service - Documentation](./orders/README.md)
+
+## Grafana
+
+Automated import of the dashboard was not possible in this demo. It has to be manually added in the GUI. Click add dashboard in the GUI 
+and select the dashboard under `./grafana/provisioning/dashboards/logs.json`
